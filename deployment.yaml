@@ -1,0 +1,50 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: default
+  name: nodejs-app
+  labels:
+    app: nodejs-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+        - name: nodejs-app
+          image: harbor.home.pcfdot.com:443/library/hello-world-nodejs:latest
+          imagePullPolicy: Always
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   namespace: default
+#   name: nodejs-app-svc
+# spec:
+#   ports:
+#     - name: http
+#       port: 80
+#       protocol: TCP
+#       targetPort: 8080
+#   selector:
+#     app: nodejs-app
+#   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: default
+  name: nodejs-app-np
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: nodejs-app
+  type: NodePort
