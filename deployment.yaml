@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nodejs-app
-          image: hello-world-nodejs:latest
+          image: shagupta/hello-world-nodejs:latest
           imagePullPolicy: Always
 # ---
 # apiVersion: v1
