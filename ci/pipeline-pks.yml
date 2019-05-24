@@ -1,0 +1,54 @@
+---
+jobs:
+  - name: make-kubeconfig
+    plan:
+      - task: pks-get-credentials
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: shagupta/pks-cli, tag: "1.3" }
+          outputs:
+            - name: pks-creds
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                env
+                pks login -a ${PKS_API_URL} -u admin -p ${UAA_ADMIN_PASSWORD} -k
+                KUBECONFIG=pks-creds/kube.config pks get-credentials ${PKS_CLUSTER_NAME}
+          params:
+            UAA_ADMIN_PASSWORD: ((UAA_ADMIN_PASSWORD))
+            PKS_API_URL: ((PKS_API_URL))
+            PKS_CLUSTER_NAME: ((PKS_CLUSTER_NAME))
+      - task: echo-credentials
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: shagupta/pks-cli, tag: "1.3" }
+          inputs:
+            - name: pks-creds
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                ls -l pks-creds
+                cat "pks-creds/kube.config"
+      - task: kubectl-cli
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: shagupta/pks-cli, tag: "1.3" }
+          inputs:
+            - name: pks-creds
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                # kubectl apply -f 
+                kubectl --kubeconfig=pks-creds/kube.config get all --all-namespaces

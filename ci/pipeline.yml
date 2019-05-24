@@ -1,0 +1,90 @@
+resource_types:
+- name: kubernetes
+  type: docker-image
+  source:
+    repository: zlabjp/kubernetes-resource
+    tag: "1.13"
+
+resources:
+  - name : k8s
+    type: kubernetes
+  - name: nodejs-app
+    type: git
+    source:
+      uri: https://github.com/sharadg/hello-world-nodejs.git
+      branch: master
+  - name: docker-repo
+    type: docker-image
+    source:
+      repository: ((DOCKER-REPO-LOCATION))
+      # Use following patterns if image is going on Harbor
+      # repository: ((DOCKER-REPO-HOST))/((DOCKER-REPO-LOCATION))
+      username: ((DOCKER-REPO-USERNAME))
+      password: ((DOCKER-REPO-PASSWORD))
+      # Add Harbor to insecure_registries list for docker cli
+      # insecure_registries: [((DOCKER-REPO-HOST))]
+
+jobs:
+  - name: "Build Docker Image"
+    plan:
+      - get: nodejs-app
+        trigger: true
+      - put: docker-repo
+        params:
+          build: nodejs-app
+          tag_as_latest: true
+  - name: "Deploy Application"
+    serial: true
+    plan:
+      - get: docker-repo
+        trigger: true
+        passed:
+          - "Build Docker Image"
+      - get: nodejs-app
+        trigger: true
+        passed:
+          - "Build Docker Image"
+      - task: pks-get-credentials
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: shagupta/pks-cli, tag: "1.3" }
+          outputs:
+            - name: pks-creds
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                # env
+                pks login -a ${PKS_API_URL} -u ${PKS_CLI_USER} -p ${PKS_CLI_PASSWORD} -k
+                KUBECONFIG=pks-creds/kube.config pks get-credentials ${PKS_CLUSTER_NAME}
+          params:
+            PKS_CLI_USER: ((PKS_CLI_USER))
+            PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))
+            PKS_API_URL: ((PKS_API_URL))
+            PKS_CLUSTER_NAME: ((PKS_CLUSTER_NAME))
+      - put: k8s
+        params:
+          kubectl: apply -f nodejs-app/deployment.yaml
+          wait_until_ready_selector: app=nodejs-app
+          kubeconfig_file: pks-creds/kube.config
+
+# This block is an illustration to run kubectl commands without using kubernetes-resource docker image
+      # - task: kubectl-apply
+      #   config:
+      #     platform: linux
+      #     image_resource:
+      #       type: docker-image
+      #       source: { repository: shagupta/pks-cli, tag: "1.3" }
+      #     inputs:
+      #       - name: pks-creds
+      #       - name: nodejs-app
+      #     run:
+      #       path: sh
+      #       args:
+      #         - -exc
+      #         - |
+      #           kubectl --kubeconfig=pks-creds/kube.config apply -f nodejs-app/deployment.yaml
+      #           kubectl --kubeconfig=pks-creds/kube.config get all --all-namespaces
