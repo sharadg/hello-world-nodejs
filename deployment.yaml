@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nodejs-app
-          image: harbor.home.pcfdot.com:443/library/hello-world-nodejs:latest
+          image: hello-world-nodejs:latest
           imagePullPolicy: Always
 # ---
 # apiVersion: v1
