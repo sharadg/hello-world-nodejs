@@ -1,0 +1,10 @@
+/**/**/.DS_Store
+/target/
+.factorypath
+.classpath
+.settings
+build/
+.project
+/.idea/
+ci/variables.yml
+*~
