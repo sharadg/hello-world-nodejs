@@ -59,7 +59,7 @@ jobs:
               - |
                 # env
                 pks login -a ${PKS_API_URL} -u ${PKS_CLI_USER} -p ${PKS_CLI_PASSWORD} -k
-                KUBECONFIG=pks-creds/kube.config pks get-credentials ${PKS_CLUSTER_NAME}
+                KUBECONFIG=pks-creds/kube.config PKS_USER_PASSWORD=${PKS_CLI_PASSWORD} pks get-credentials ${PKS_CLUSTER_NAME}
           params:
             PKS_CLI_USER: ((PKS_CLI_USER))
             PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))
