@@ -1,17 +1,17 @@
 # Use this pattern if docker image is going on Harbor
-# DOCKER-REPO-HOST: harbor.home.pcfdot.com:443
+# DOCKER_REPO_HOST: harbor.home.pcfdot.com:443
 
 # Use this pattern if docker image is on Docker hub
-DOCKER-REPO-HOST: docker.io
+DOCKER_REPO_HOST: docker.io
 
-# DOCKER-REPO-LOCATION: library/hello-world-nodejs
-DOCKER-REPO-LOCATION: shagupta/hello-world-nodejs
+# DOCKER_REPO_LOCATION: library/hello-world-nodejs
+DOCKER_REPO_LOCATION: shagupta/hello-world-nodejs
 
 # Username for logging into Docker hub or Harbor
-# DOCKER-REPO-USERNAME: admin
-# DOCKER-REPO-PASSWORD: 
-DOCKER-REPO-USERNAME: shagupta
-DOCKER-REPO-PASSWORD: 
+# DOCKER_REPO_USERNAME: admin
+# DOCKER_REPO_PASSWORD:
+DOCKER_REPO_USERNAME: shagupta
+DOCKER_REPO_PASSWORD:
 
 # Username/Password for PKS CLI login and get-credentials
 PKS_CLI_USER: admin

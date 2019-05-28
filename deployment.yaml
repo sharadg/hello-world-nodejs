@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nodejs-app
-          image: shagupta/hello-world-nodejs@$DIGEST_VERSION
+          image: $DOCKER_REPO_HOST/$DOCKER_REPO_LOCATION@$DIGEST_VERSION
           imagePullPolicy: Always
 # ---
 # apiVersion: v1
