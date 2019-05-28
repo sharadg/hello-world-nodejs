@@ -50,6 +50,9 @@ jobs:
           image_resource:
             type: docker-image
             source: { repository: harbor.home.pcfdot.com/library/pks-cli, tag: "1.4", insecure_registries: [((DOCKER-REPO-HOST))] }
+          inputs:
+            - name: docker-repo
+            - name: nodejs-app
           outputs:
             - name: pks-creds
           run:
@@ -60,6 +63,8 @@ jobs:
                 # env
                 pks login -a ${PKS_API_URL} -u ${PKS_CLI_USER} -p ${PKS_CLI_PASSWORD} -k
                 KUBECONFIG=pks-creds/kube.config PKS_USER_PASSWORD=${PKS_CLI_PASSWORD} pks get-credentials ${PKS_CLUSTER_NAME}
+                export DIGEST_VERSION=docker-repo/digest
+                envsubst < nodejs-app/deployment.yaml > nodejs-app/deployment.yaml
           params:
             PKS_CLI_USER: ((PKS_CLI_USER))
             PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))
