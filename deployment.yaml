@@ -20,7 +20,7 @@ spec:
         fsGroup: 2000
       containers:
         - name: nodejs-app
-          image: harbor.home.pcfdot.com/library/hello-world-nodejs@$DIGEST_VERSION
+          image: $DOCKER-REPO-HOST/$DOCKER-REPO-LOCATION@$DIGEST_VERSION
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false

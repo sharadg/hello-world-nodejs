@@ -71,6 +71,8 @@ jobs:
             PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))
             PKS_API_URL: ((PKS_API_URL))
             PKS_CLUSTER_NAME: ((PKS_CLUSTER_NAME))
+            DOCKER-REPO-HOST: ((DOCKER-REPO-HOST))
+            DOCKER-REPO-LOCATION: ((DOCKER-REPO-LOCATION))
       - put: k8s
         params:
           kubectl: apply -f nodejs-app/deployment-new.yaml
