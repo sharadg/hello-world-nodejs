@@ -16,13 +16,13 @@ resources:
   - name: docker-repo
     type: docker-image
     source:
-      # repository: ((DOCKER-REPO-LOCATION))
+      # repository: ((DOCKER_REPO_LOCATION))
       # Use following patterns if image is going on Harbor
-      repository: ((DOCKER-REPO-HOST))/((DOCKER-REPO-LOCATION))
-      username: ((DOCKER-REPO-USERNAME))
-      password: ((DOCKER-REPO-PASSWORD))
+      repository: ((DOCKER_REPO_HOST))/((DOCKER_REPO_LOCATION))
+      username: ((DOCKER_REPO_USERNAME))
+      password: ((DOCKER_REPO_PASSWORD))
       # Add Harbor to insecure_registries list for docker cli
-      insecure_registries: [((DOCKER-REPO-HOST))]
+      insecure_registries: [((DOCKER_REPO_HOST))]
 
 jobs:
   - name: "Build Docker Image"
@@ -49,7 +49,7 @@ jobs:
           platform: linux
           image_resource:
             type: docker-image
-            source: { repository: harbor.home.pcfdot.com/library/pks-cli, tag: "1.4", insecure_registries: [((DOCKER-REPO-HOST))] }
+            source: { repository: harbor.home.pcfdot.com/library/pks-cli, tag: "1.4", insecure_registries: [((DOCKER_REPO_HOST))] }
           inputs:
             - name: docker-repo
             - name: nodejs-app
@@ -71,8 +71,8 @@ jobs:
             PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))
             PKS_API_URL: ((PKS_API_URL))
             PKS_CLUSTER_NAME: ((PKS_CLUSTER_NAME))
-            DOCKER-REPO-HOST: ((DOCKER-REPO-HOST))
-            DOCKER-REPO-LOCATION: ((DOCKER-REPO-LOCATION))
+            DOCKER_REPO_HOST: ((DOCKER_REPO_HOST))
+            DOCKER_REPO_LOCATION: ((DOCKER_REPO_LOCATION))
       - put: k8s
         params:
           kubectl: apply -f nodejs-app/deployment-new.yaml
