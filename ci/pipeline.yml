@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
-    tag: "1.13"
+    tag: "1.14"
 
 resources:
   - name : k8s
@@ -12,17 +12,17 @@ resources:
     type: git
     source:
       uri: https://github.com/sharadg/hello-world-nodejs.git
-      branch: master
+      branch: pks-1.4
   - name: docker-repo
     type: docker-image
     source:
-      repository: ((DOCKER-REPO-LOCATION))
+      # repository: ((DOCKER-REPO-LOCATION))
       # Use following patterns if image is going on Harbor
-      # repository: ((DOCKER-REPO-HOST))/((DOCKER-REPO-LOCATION))
+      repository: ((DOCKER-REPO-HOST))/((DOCKER-REPO-LOCATION))
       username: ((DOCKER-REPO-USERNAME))
       password: ((DOCKER-REPO-PASSWORD))
       # Add Harbor to insecure_registries list for docker cli
-      # insecure_registries: [((DOCKER-REPO-HOST))]
+      insecure_registries: [((DOCKER-REPO-HOST))]
 
 jobs:
   - name: "Build Docker Image"
@@ -49,7 +49,7 @@ jobs:
           platform: linux
           image_resource:
             type: docker-image
-            source: { repository: shagupta/pks-cli, tag: "1.3" }
+            source: { repository: harbor.home.pcfdot.com/library/pks-cli, tag: "1.4", insecure_registries: [((DOCKER-REPO-HOST))] }
           outputs:
             - name: pks-creds
           run:
@@ -59,7 +59,7 @@ jobs:
               - |
                 # env
                 pks login -a ${PKS_API_URL} -u ${PKS_CLI_USER} -p ${PKS_CLI_PASSWORD} -k
-                KUBECONFIG=pks-creds/kube.config pks get-credentials ${PKS_CLUSTER_NAME}
+                KUBECONFIG=pks-creds/kube.config PKS_USER_PASSWORD=${PKS_CLI_PASSWORD} pks get-credentials ${PKS_CLUSTER_NAME}
           params:
             PKS_CLI_USER: ((PKS_CLI_USER))
             PKS_CLI_PASSWORD: ((PKS_CLI_PASSWORD))

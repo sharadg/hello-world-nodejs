@@ -14,10 +14,16 @@ spec:
       labels:
         app: nodejs-app
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
       containers:
         - name: nodejs-app
-          image: shagupta/hello-world-nodejs:latest
+          image: harbor.home.pcfdot.com/library/hello-world-nodejs:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
 # ---
 # apiVersion: v1
 # kind: Service
