@@ -78,6 +78,24 @@ jobs:
           kubectl: apply -f nodejs-app/deployment-new.yaml
           wait_until_ready_selector: app=nodejs-app
           kubeconfig_file: pks-creds/kube.config
+      - task: kubectl-get-nodeport
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: harbor.home.pcfdot.com/library/pks-cli, tag: "1.4", insecure_registries: [((DOCKER_REPO_HOST))] }
+          inputs:
+            - name: pks-creds
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                # env
+                echo "## Kubernetes nodes ExternalIP ##"
+                kubectl --kubeconfig=pks-creds/kube.config get nodes -o json | jq -r '.items[].status.addresses[] | select(.type == "ExternalIP") | .address'
+                echo "## NodePort running the service ##"
+                kubectl --kubeconfig=pks-creds/kube.config get services nodejs-app-np -o json | jq -r '.spec.ports[0].nodePort'
 
 # This block is an illustration to run kubectl commands without using kubernetes-resource docker image
       # - task: kubectl-apply
